@@ -30,7 +30,19 @@ interface IMessage {
   content: string
 }
 
-export const chat = async (name: string, personality: string, chatLogs: IMessage[] = [], message: string) => {
+export const clamp = (num, min, max) => Math.min(Math.max(num, min), max)
+
+export const chat = async (
+  name: string,
+  personality: string,
+  chatLogs: IMessage[] = [],
+  message: string,
+  temperature?: string,
+  max_tokens?: string,
+  top_p?: string,
+  frequency_penalty?: string,
+  presence_penalty?: string,
+) => {
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [
@@ -44,11 +56,11 @@ export const chat = async (name: string, personality: string, chatLogs: IMessage
         content: message
       }
     ],
-    temperature: 0.7,
-    max_tokens: 256,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
+    temperature: temperature ? clamp(parseFloat(temperature), 0, 2) : 0.7,
+    max_tokens: max_tokens ? clamp(parseInt(max_tokens), 1, 4095) : 256,
+    top_p: top_p ? clamp(parseFloat(top_p), 0, 1) : 1,
+    frequency_penalty: frequency_penalty ? clamp(parseFloat(frequency_penalty), 0, 2) : 0,
+    presence_penalty: presence_penalty ? clamp(parseFloat(presence_penalty), 0, 2) : 0,
   })
 
   const answer = response.data.choices[0].message.content

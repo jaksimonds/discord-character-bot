@@ -21,7 +21,7 @@ export const execute = async (interaction) => {
 	try {
 		const characterName = interaction.options.getString('name')
 		const voiceChannelName = interaction.options.getString('channel')
-		const open = interaction.options.getBoolean('open')
+		const open = interaction.options?.getBoolean('open')
 
 		const characterChannel = interaction.client.channels.cache.find(channel => channel.name === `character-${characterName.toLowerCase()}`)
 		const voiceChannel = interaction.client.channels.cache.find(channel => channel.name === voiceChannelName)
