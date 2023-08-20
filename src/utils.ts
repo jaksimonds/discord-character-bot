@@ -67,7 +67,7 @@ export const transcribe = async (file: string) => {
   }
 }
 
-export const subscribeToUser = (user, guildId, characterChannel, openStatus, characterName) => {
+export const subscribeToUser = (user, guildId, characterChannel) => {
   ffmpeg.setFfmpegPath(ffmpegStatic)
 
   const connection = getVoiceConnection(guildId)
@@ -111,16 +111,9 @@ export const subscribeToUser = (user, guildId, characterChannel, openStatus, cha
           }
         })
         .on('end', async () => {
-          if (openStatus === 'true') {
-            const value = await transcribe(mp3File)
-            characterChannel.send(`User: ${value}`)
-          } else {
-            const value = await transcribe(mp3File)
-            if (value?.toLowerCase()?.includes(characterName)) {
-              characterChannel.send(`User: ${value}`)
-            }
-          }
-
+          const value = await transcribe(mp3File)
+          characterChannel.send(`User: ${value}`)
+          streamer.destroy()
         })
         .on('error', (error) => {
           console.error(error)

@@ -1,4 +1,5 @@
-import { Events } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } from 'discord.js'
+import { subscribeToUser } from '../utils'
 
 export const name = Events.InteractionCreate
 export const execute = async (interaction) => {
@@ -18,6 +19,33 @@ export const execute = async (interaction) => {
 			}
 		} catch (error) {
 			console.error(`Error executing ${interaction.commandName}`)
+			console.error(error)
+		}
+	} else if (interaction.isButton()) {
+		try {
+			if (interaction.customId === 'start') {
+				const guild = interaction.client.guilds.cache.get(interaction.guildId)
+				const user = interaction.user
+				const voiceChannel = guild.channels.cache.find(channel => channel.id === interaction.channelId)
+				const characterMessage = voiceChannel.messages.cache.find(message => message.content.includes('Character: '))
+				const characterName = characterMessage?.content?.replace('Character: ', '')
+			
+				const characterChannel = guild.channels.cache.find(channel => channel.name === `character-${characterName.toLowerCase()}`)
+				subscribeToUser(user.id, interaction.guildId, characterChannel)
+
+				const record = new ButtonBuilder()
+					.setCustomId('start')
+					.setLabel('Start')
+					.setStyle(ButtonStyle.Primary)
+				const row = new ActionRowBuilder()
+					.addComponents(record)
+				await interaction.update({
+					content: 'Record:',
+					components: [row]
+				})
+			}
+		} catch (error) {
+			console.error(`Error clicking button ${interaction.customId}`)
 			console.error(error)
 		}
 	} else return
