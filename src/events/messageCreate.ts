@@ -19,8 +19,24 @@ export const execute = async (message) => {
           const characterName = channel.name.replace('character-', '')
 
           const pinnedMessages = await channel.messages.fetchPinned()
+          
           const characterPersonality = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('system'))
           const personalityMessage = characterPersonality.content.toLowerCase().replace('system: ', '')
+
+          const temperature = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('temperature'))
+          const temperatureMessage = temperature?.content?.toLowerCase()?.replace('temperature: ', '') || ''
+
+          const max_tokens = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('max tokens'))
+          const max_tokensMessage = max_tokens?.content?.toLowerCase()?.replace('max tokens: ', '') || ''
+
+          const top_p = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('top p'))
+          const top_pMessage = top_p?.content?.toLowerCase()?.replace('top p: ', '') || ''
+
+          const frequency_penalty = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('frequency penalty'))
+          const frequency_penaltyMessage = frequency_penalty?.content?.toLowerCase()?.replace('frequency penalty: ', '') || ''
+
+          const presence_penalty = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('presence penalty'))
+          const presence_penaltyMessage = presence_penalty?.content?.toLowerCase()?.replace('presence penalty: ', '') || ''
 
           const lastMessages = await channel.messages.fetch({
             limit: 10,
@@ -43,7 +59,17 @@ export const execute = async (message) => {
 
           const userMessage = message.content.toLowerCase().replace('user: ', '')
 
-          const response = await chat(characterName, personalityMessage, chatLog, userMessage)
+          const response = await chat(
+            characterName,
+            personalityMessage,
+            chatLog,
+            userMessage,
+            temperatureMessage,
+            max_tokensMessage,
+            top_pMessage,
+            frequency_penaltyMessage,
+            presence_penaltyMessage
+          )
           await channel.send(`Assistant: ${response}`)
         } catch (error) {
           console.error(`error attempting to transcribe audio: ${error}`)

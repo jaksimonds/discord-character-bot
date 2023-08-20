@@ -18,24 +18,63 @@ export const data = new SlashCommandBuilder()
       .setDescription('Sets the voice profile for the character to use.')
       .setRequired(true)
       .setAutocomplete(true))
+  .addStringOption(option =>
+    option.setName('temperature')
+      .setDescription('Controls AI randomness.'))
+  .addStringOption(option => 
+    option.setName('max_tokens')
+      .setDescription('Controls how much text is generated.'))
+  .addStringOption(option =>
+    option.setName('top_p')
+      .setDescription('Controls message diversity.'))
+  .addStringOption(option =>
+    option.setName('frequency_penalty')
+      .setDescription('Decreases likelihood of repeat messages.'))
+  .addStringOption(option =>
+    option.setName('presence_penalty')
+      .setDescription('Increases likelihood of new topics.'))
 
 export const execute = async (interaction) => {
-  const channel = interaction.channel
-  const characterName = interaction.options.getString('name')
-  const characterPersonality = interaction.options.getString('personality')
-  const characterVoice = interaction.options.getString('voice')
-
-  if (channel instanceof TextChannel) {
-    const thread = await channel.threads.create({
-      name: `character-${characterName.toLowerCase()}`,
-      autoArchiveDuration: 60,
-      reason: `Character log for ${characterName}.`
-    })
-    await thread.send(`System: ${characterPersonality}`).then(message => message.pin())
-    await thread.send(`Voice: ${characterVoice}`).then(message => message.pin())
-    await interaction.reply('Character creation thread created!')
-  } else {
-    interaction.reply('This channel is not a text channel')
+  try {
+    const channel = interaction.channel
+    const characterName = interaction.options.getString('name')
+    const characterPersonality = interaction.options.getString('personality')
+    const characterVoice = interaction.options.getString('voice')
+    const temperature = interaction.options?.getString('temperature')
+    const max_tokens = interaction.options?.getString('max_tokens')
+    const top_p = interaction.options?.getString('top_p')
+    const frequency_penalty = interaction.options?.getString('frequency_penalty')
+    const presence_penalty = interaction.options?.getString('presence_penalty')
+  
+    if (channel instanceof TextChannel) {
+      const thread = await channel.threads.create({
+        name: `character-${characterName.toLowerCase()}`,
+        autoArchiveDuration: 60,
+        reason: `Character log for ${characterName}.`
+      })
+      await thread.send(`System: ${characterPersonality}`).then(message => message.pin())
+      await thread.send(`Voice: ${characterVoice}`).then(message => message.pin())
+      if (temperature) {
+        await thread.send(`Temperature: ${temperature}`).then(message => message.pin())
+      }
+      if (max_tokens) {
+        await thread.send(`Max Tokens: ${max_tokens}`).then(message => message.pin())
+      }
+      if (top_p) {
+        await thread.send(`Top P: ${top_p}`).then(message => message.pin())
+      }
+      if (frequency_penalty) {
+        await thread.send(`Frequency Penalty: ${frequency_penalty}`).then(message => message.pin())
+      }
+      if (presence_penalty) {
+        await thread.send(`Presence Penalty: ${presence_penalty}`).then(message => message.pin())
+      }
+      await interaction.reply('Character creation thread created!')
+    } else {
+      interaction.reply('This channel is not a text channel')
+    }
+  } catch (error) {
+    console.error(`Error creating characer: ${error}`)
   }
 }
 
