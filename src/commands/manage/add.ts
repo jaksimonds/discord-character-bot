@@ -7,15 +7,15 @@ export const data = new SlashCommandBuilder()
 	.setDescription('Adds character to voice call.')
 	.addStringOption(option =>
 		option.setName('name')
-			.setDescription('The name of the character to message')
+			.setDescription('The name of the character to message.')
 			.setRequired(true))
 	.addStringOption(option =>
 		option.setName('channel')
-			.setDescription('The name of the channel the character will join')
+			.setDescription('The name of the channel the character will join.')
 			.setRequired(true))
 	.addBooleanOption(option =>
 		option.setName('open')
-			.setDescription('Sets if the call is open mic or not'))
+			.setDescription('Sets if the call is open mic or not.'))
 
 export const execute = async (interaction) => {
 	try {

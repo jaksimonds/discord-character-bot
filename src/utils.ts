@@ -17,6 +17,7 @@ import {
   ResultReason
 } from 'microsoft-cognitiveservices-speech-sdk'
 import { Configuration, OpenAIApi } from "openai"
+import { TextChannel } from 'discord.js'
 
 const configuration = new Configuration({
   organization: "org-luvrFP8KIr7T00u3G61J65R8",
@@ -30,7 +31,7 @@ interface IMessage {
   content: string
 }
 
-export const clamp = (num, min, max) => Math.min(Math.max(num, min), max)
+export const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max)
 
 export const chat = async (
   name: string,
@@ -79,7 +80,7 @@ export const transcribe = async (file: string) => {
   }
 }
 
-export const subscribeToUser = (user, guildId, characterChannel) => {
+export const subscribeToUser = (user: string, guildId: string, characterChannel: TextChannel) => {
   ffmpeg.setFfmpegPath(ffmpegStatic)
 
   const connection = getVoiceConnection(guildId)
@@ -134,7 +135,7 @@ export const subscribeToUser = (user, guildId, characterChannel) => {
   })
 }
 
-export const azureTextToSpeech = async (message, voice, guildId) => {
+export const azureTextToSpeech = async (message: string, voice: string, guildId: string) => {
   try {
     const filename = path.join(__dirname, 'recordings/tts.mp3')
     const speechConfig = SpeechConfig.fromSubscription(process.env.AZURE_SPEECH_KEY, process.env.AZURE_SPEECH_REGION)
@@ -162,7 +163,7 @@ export const azureTextToSpeech = async (message, voice, guildId) => {
   }
 }
 
-export const elevenlabsSpeak = async (message, voiceId, guildId) => {
+export const elevenlabsSpeak = async (message: string, voiceId: string, guildId: string) => {
   try {
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
@@ -193,7 +194,7 @@ export const elevenlabsSpeak = async (message, voiceId, guildId) => {
   }
 }
 
-export const speak = (filename, guildId) => {
+export const speak = (filename: string, guildId: string) => {
   const connection = getVoiceConnection(guildId)
   const audioPlayer = createAudioPlayer()
 
