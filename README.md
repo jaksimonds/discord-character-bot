@@ -1,5 +1,12 @@
 # Discord Character Bot
 
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-74aa9c?style=for-the-badge&logo=openai&logoColor=white)
+![ElevenLabs](https://img.shields.io/badge/ElvenLabs-white.svg?style=for-the-badge)
+![Azure](https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
+
 A Node.JS Discord Bot that allows users to create custom AI characters that can be added to voice channels. This bot uses Open AI's Whisper model for speech to text transcription, Open AI's gpt-3.5-turbo model for text generation, and either Eleven Labs or Microsoft Azure's text to speech services.
 
 **DISCLAIMER: User consent is required to use this bot.**
