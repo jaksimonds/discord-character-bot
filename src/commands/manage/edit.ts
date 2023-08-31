@@ -8,7 +8,8 @@ export const data = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('name')
       .setDescription('Sets the name of the character.')
-      .setRequired(true))
+      .setRequired(true)
+      .setAutocomplete(true))
   .addStringOption(option =>
     option.setName('personality')
       .setDescription('Sets the personality that will be used by openai.'))
@@ -105,14 +106,23 @@ export const execute = async (interaction) => {
 }
 
 export const autocomplete = async (interaction) => {
-  const focusedValue = interaction.options.getFocused()
-  if (focusedValue) {
+  const focusedOption = interaction.options.getFocused(true)
+  const guild = interaction.guild
+  if (focusedOption.name === 'name') {
+		const characterChannels = guild.channels.cache.filter(channel => channel.name.startsWith('character'))
+		const filteredChannels = characterChannels.filter(channel => channel.name.replace('character-', '').toLowerCase().startsWith(focusedOption.value.toLowerCase()))
+		interaction.respond(filteredChannels.map(channel => ({
+			name: channel.name.replace('character-', ''),
+			value: channel.name.replace('character-', '')
+		})))
+	}
+  if (focusedOption.name === 'voice') {
     if (process?.env?.ELEVEN_LABS_API_KEY) {
       try {
         readFile(path.join(__dirname, '../../voices/elevenLabsVoices.json'), 'utf8', async (error, data) => {
           if (error) throw error
           const { voices } = JSON.parse(data)
-          const filteredVoices = voices.filter(voice => voice.name.toLowerCase().startsWith(focusedValue))
+          const filteredVoices = voices.filter(voice => voice.name.toLowerCase().startsWith(focusedOption.value))
           await interaction.respond(
             filteredVoices.map(voice => ({
               name: voice.name,
@@ -128,7 +138,7 @@ export const autocomplete = async (interaction) => {
         readFile(path.join(__dirname, '../../voices/azureSpeechVoices.json'), 'utf8', async (error, data) => {
           if (error) throw error
           const voices = JSON.parse(data)
-          const filteredVoices = voices.filter(voice => voice.DisplayName.toLowerCase().startsWith(focusedValue))
+          const filteredVoices = voices.filter(voice => voice.DisplayName.toLowerCase().startsWith(focusedOption.value))
           await interaction.respond(
             filteredVoices.slice(0, 25).map(voice => ({
               name: voice.DisplayName,

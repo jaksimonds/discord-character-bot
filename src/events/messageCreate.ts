@@ -45,7 +45,7 @@ export const execute = async (message) => {
 
           const previousMessages = lastMessages?.filter(message => !message.content.toLowerCase().startsWith('system') && !message.content.toLowerCase().startsWith('voice'))
           let chatLog = []
-          if (previousMessages.length) {
+          if (previousMessages) {
             chatLog = previousMessages.map(message => {
               const array = message.content.split(': ')
               const role = array?.at(0).toLowerCase()

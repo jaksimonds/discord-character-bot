@@ -49,7 +49,7 @@ export const chat = async (
     messages: [
       {
         role: 'system',
-        content: `Your name is ${name}. ${personality}`,
+        content: `Your name is ${name}. ${personality} You will respond exclusively in English.`,
       },
       ...chatLogs,
       {
@@ -87,7 +87,7 @@ export const subscribeToUser = (user: string, guildId: string, characterChannel:
   const streamer = connection.receiver.subscribe(user, {
     end: {
       behavior: EndBehaviorType.AfterSilence,
-      duration: 100,
+      duration: 1000,
     }
   })
 
