@@ -13,26 +13,35 @@ export const data = new SlashCommandBuilder()
     option.setName('personality')
       .setDescription('Sets the personality that will be used by openai.')
       .setRequired(true))
-  .addStringOption(option => 
+  .addStringOption(option =>
     option.setName('voice')
       .setDescription('Sets the voice profile for the character to use.')
       .setRequired(true)
       .setAutocomplete(true))
-  .addStringOption(option =>
+  .addNumberOption(option =>
     option.setName('temperature')
-      .setDescription('Controls AI randomness.'))
-  .addStringOption(option => 
+      .setDescription('Controls AI randomness.')
+      .setMinValue(0)
+      .setMaxValue(2))
+  .addNumberOption(option =>
     option.setName('max_tokens')
-      .setDescription('Controls how much text is generated.'))
-  .addStringOption(option =>
+      .setDescription('Controls how much text is generated.')
+      .setMinValue(1))
+  .addNumberOption(option =>
     option.setName('top_p')
-      .setDescription('Controls message diversity.'))
-  .addStringOption(option =>
+      .setDescription('Controls message diversity.')
+      .setMinValue(0)
+      .setMaxValue(1))
+  .addNumberOption(option =>
     option.setName('frequency_penalty')
-      .setDescription('Decreases likelihood of repeat messages.'))
-  .addStringOption(option =>
+      .setDescription('Decreases likelihood of repeat messages.')
+      .setMinValue(0)
+      .setMaxValue(2))
+  .addNumberOption(option =>
     option.setName('presence_penalty')
-      .setDescription('Increases likelihood of new topics.'))
+      .setDescription('Increases likelihood of new topics.')
+      .setMinValue(0)
+      .setMaxValue(2))
 
 export const execute = async (interaction) => {
   try {
@@ -45,7 +54,7 @@ export const execute = async (interaction) => {
     const top_p = interaction.options?.getString('top_p')
     const frequency_penalty = interaction.options?.getString('frequency_penalty')
     const presence_penalty = interaction.options?.getString('presence_penalty')
-  
+
     if (channel instanceof TextChannel) {
       const thread = await channel.threads.create({
         name: `character-${characterName.toLowerCase()}`,
