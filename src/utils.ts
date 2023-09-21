@@ -5,6 +5,7 @@ import {
   createAudioPlayer,
   createAudioResource
 } from '@discordjs/voice'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
 import { createWriteStream, createReadStream } from 'fs'
 import { opus } from 'prism-media'
 import { pipeline, Transform } from 'stream'
@@ -17,7 +18,7 @@ import {
   ResultReason
 } from 'microsoft-cognitiveservices-speech-sdk'
 import { Configuration, OpenAIApi } from "openai"
-import { TextChannel } from 'discord.js'
+import { TextChannel, VoiceChannel } from 'discord.js'
 
 const configuration = new Configuration({
   organization: "org-luvrFP8KIr7T00u3G61J65R8",
@@ -80,7 +81,7 @@ export const transcribe = async (file: string) => {
   }
 }
 
-export const subscribeToUser = (user: string, guildId: string, characterChannel: TextChannel) => {
+export const subscribeToUser = (user: string, guildId: string, characterChannel: TextChannel, voiceChannel?: VoiceChannel) => {
   ffmpeg.setFfmpegPath(ffmpegStatic)
 
   const connection = getVoiceConnection(guildId)
@@ -125,11 +126,37 @@ export const subscribeToUser = (user: string, guildId: string, characterChannel:
         })
         .on('end', async () => {
           const value = await transcribe(mp3File)
+          if (voiceChannel) {
+            const record = new ButtonBuilder()
+              .setCustomId('start')
+              .setLabel('Start')
+              .setStyle(ButtonStyle.Primary)
+            const row = new ActionRowBuilder<ButtonBuilder>()
+              .addComponents(record)
+            const recordMessage = voiceChannel.messages.cache.find(message => message.content.includes('Record:'))
+            await recordMessage.edit({
+              content: 'Record:',
+              components: [row]
+            })
+          }
           characterChannel.send(`User: ${value}`)
           streamer.destroy()
         })
-        .on('error', (error) => {
+        .on('error', async (error) => {
           console.error(error)
+          if (voiceChannel) {
+            const record = new ButtonBuilder()
+              .setCustomId('start')
+              .setLabel('Start')
+              .setStyle(ButtonStyle.Primary)
+            const row = new ActionRowBuilder<ButtonBuilder>()
+              .addComponents(record)
+            const recordMessage = voiceChannel.messages.cache.find(message => message.content.includes('Record:'))
+            await recordMessage.edit({
+              content: 'Record:',
+              components: [row]
+            })
+          }
         })
     }
   })
