@@ -48,13 +48,13 @@ export const execute = async (message) => {
           if (previousMessages) {
             chatLog = previousMessages.map(message => {
               const array = message.content.split(': ')
-              const role = array?.at(0).toLowerCase()
-              const content = array?.at(1).toLowerCase()
+              const role = array?.at(0)?.toLowerCase()
+              const content = array?.at(1)?.toLowerCase()
               return {
-                role: role,
-                content: content
+                role: role || '',
+                content: content || ''
               }
-            })
+            }).filter(message => message.role && message.content)
           }
 
           const userMessage = message.content.toLowerCase().replace('user: ', '')
@@ -72,7 +72,7 @@ export const execute = async (message) => {
           )
           await channel.send(`Assistant: ${response}`)
         } catch (error) {
-          console.error(`error attempting to transcribe audio: ${error}`)
+          console.error(`error attempting to generate response: ${error}`)
         }
       } else if (message.content.toLowerCase().startsWith('assistant: ')) {
         try {

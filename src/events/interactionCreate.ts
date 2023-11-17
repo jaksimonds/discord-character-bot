@@ -31,12 +31,13 @@ export const execute = async (interaction) => {
 				const characterName = characterMessage?.content?.replace('Character: ', '')
 			
 				const characterChannel = guild.channels.cache.find(channel => channel.name === `character-${characterName.toLowerCase()}`)
-				subscribeToUser(user.id, interaction.guildId, characterChannel)
+				subscribeToUser(user.id, interaction.guildId, characterChannel, voiceChannel)
 
 				const record = new ButtonBuilder()
 					.setCustomId('start')
-					.setLabel('Start')
+					.setLabel('Recording')
 					.setStyle(ButtonStyle.Primary)
+					.setDisabled(true)
 				const row = new ActionRowBuilder()
 					.addComponents(record)
 				await interaction.update({
