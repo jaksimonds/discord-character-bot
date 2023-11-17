@@ -17,15 +17,15 @@ import {
   SpeechSynthesizer,
   ResultReason
 } from 'microsoft-cognitiveservices-speech-sdk'
-import { Configuration, OpenAIApi } from "openai"
+import OpenAI from 'openai'
 import { TextChannel, VoiceChannel } from 'discord.js'
 
-const configuration = new Configuration({
+const configuration = {
   organization: "org-luvrFP8KIr7T00u3G61J65R8",
   apiKey: process.env.OPENAI_API_KEY,
-})
+}
 
-const openai = new OpenAIApi(configuration)
+const openai = new OpenAI(configuration)
 
 interface IMessage {
   role: 'system' | 'user' | 'assistant'
@@ -45,8 +45,8 @@ export const chat = async (
   frequency_penalty?: string,
   presence_penalty?: string,
 ) => {
-  const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
     messages: [
       {
         role: 'system',
@@ -65,17 +65,18 @@ export const chat = async (
     presence_penalty: presence_penalty ? clamp(parseFloat(presence_penalty), 0, 2) : 0,
   })
 
-  const answer = response.data.choices[0].message.content
+  const answer = response.choices[0].message.content
   return answer
 }
 
 export const transcribe = async (file: string) => {
   try {
     const fileObject = createReadStream(file)
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const response = await openai.createTranscription(fileObject, 'whisper-1')
-    return response.data.text
+    const response = await openai.audio.transcriptions.create({
+      model: 'whisper-1',
+      file: fileObject,
+    })
+    return response.text
   } catch (error) {
     console.log(`transcription error: ${error}`)
   }

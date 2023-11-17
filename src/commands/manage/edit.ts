@@ -48,11 +48,11 @@ export const execute = async (interaction) => {
     const characterName = interaction.options.getString('name')
     const personality = interaction.options?.getString('personality')
     const voice = interaction.options?.getString('voice')
-    const temperature = interaction.options?.getString('temperature')
-    const max_tokens = interaction.options?.getString('max_tokens')
-    const top_p = interaction.options?.getString('top_p')
-    const frequency_penalty = interaction.options?.getString('frequency_penalty')
-    const presence_penalty = interaction.options?.getString('presence_penalty')
+    const temperature = interaction.options?.getNumber('temperature')
+    const max_tokens = interaction.options?.getNumber('max_tokens')
+    const top_p = interaction.options?.getNumber('top_p')
+    const frequency_penalty = interaction.options?.getNumber('frequency_penalty')
+    const presence_penalty = interaction.options?.getNumber('presence_penalty')
 
     if (channel instanceof TextChannel) {
       const characterChannel = interaction.client.channels.cache.find(channel => channel.name === `character-${characterName.toLowerCase()}`)
