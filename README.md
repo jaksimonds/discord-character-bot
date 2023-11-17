@@ -79,11 +79,11 @@ Used to create a thread in the text channel where the command was executed. The 
 | Name              | Sets the name of the character.                   | String | True     |
 | Personality       | Sets the personality that will be used by OpenAI. | String | True     |
 | Voice             | Sets the voice profile for the character to use.  | String | True     |
-| Temperature       | Controls AI randomness.                           | String | False    |
-| Max Tokens        | Controls how much text is generated.              | String | False    |
-| Top P             | Controls message diversity.                       | String | False    |
-| Frequency Penalty | Decreases likelihood of repeat messages.          | String | False    |
-| Presence Penalty  | Increases likelihood of new topics.               | String | False    |
+| Temperature       | Controls AI randomness.                           | Number | False    |
+| Max Tokens        | Controls how much text is generated.              | Number | False    |
+| Top P             | Controls message diversity.                       | Number | False    |
+| Frequency Penalty | Decreases likelihood of repeat messages.          | Number | False    |
+| Presence Penalty  | Increases likelihood of new topics.               | Number | False    |
 
 ### Add
 
@@ -103,8 +103,8 @@ Edits an existing character with the specified options.
 | Name | Sets the name of the character. | String | True |
 | Personality | Sets the personality that will be used by OpenAI. | String | False |
 | Voice | Sets the voice profile for the character to use. | String | False |
-| Temperature | Controls AI randomness. | String | False |
-| Max Tokens | Controls how much text is generated. | String | False |
-| Top P | Controls message diversity. | String | False |
-| Frequency Penalty | Decreases likelihood of repeat messages. | String | False |
-| Presence Penalty | Increases likelihood of new topics. | String | False |
+| Temperature | Controls AI randomness. | Number | False |
+| Max Tokens | Controls how much text is generated. | Number | False |
+| Top P | Controls message diversity. | Number | False |
+| Frequency Penalty | Decreases likelihood of repeat messages. | Number | False |
+| Presence Penalty | Increases likelihood of new topics. | Number | False |
