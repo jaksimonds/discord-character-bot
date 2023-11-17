@@ -108,3 +108,7 @@ Edits an existing character with the specified options.
 | Top P | Controls message diversity. | Number | False |
 | Frequency Penalty | Decreases likelihood of repeat messages. | Number | False |
 | Presence Penalty | Increases likelihood of new topics. | Number | False |
+
+### Remove
+
+Removes the bot from the server's active voice channel. Once removed the bot will remove the voice call's chat messages used for storing config options. This command does not require any extra options.
