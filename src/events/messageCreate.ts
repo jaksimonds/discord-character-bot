@@ -1,4 +1,4 @@
-import { Events } from 'discord.js'
+import { ClientUser, Events } from 'discord.js'
 import {
   chat,
   azureTextToSpeech,
@@ -8,7 +8,7 @@ import {
 export const name = Events.MessageCreate
 export const execute = async (message) => {
   const client = message.client
-  const author = message.author
+  const author = message.author as ClientUser
 
   if (author.bot) {
     const channelId = message.channelId
@@ -43,7 +43,7 @@ export const execute = async (message) => {
             before: message.id
           })
 
-          const previousMessages = lastMessages?.filter(message => !message.content.toLowerCase().startsWith('system') && !message.content.toLowerCase().startsWith('voice'))
+          const previousMessages = lastMessages?.filter(message => message.content.toLowerCase().startsWith('user') || message.content.toLowerCase().startsWith('assistant'))
           let chatLog = []
           if (previousMessages) {
             chatLog = previousMessages.map(message => {
@@ -59,6 +59,9 @@ export const execute = async (message) => {
 
           const userMessage = message.content.toLowerCase().replace('user: ', '')
 
+          author.setActivity({
+            name: 'Thinking'
+          })
           const response = await chat(
             characterName,
             personalityMessage,
@@ -81,9 +84,9 @@ export const execute = async (message) => {
           const voiceId = voiceMessage.content.replace('Voice: ', '')
           const assistantMessage = message.content.toLowerCase().replace('assistant: ', '')
           if (process?.env?.ELEVEN_LABS_API_KEY) {
-            await elevenlabsSpeak(assistantMessage, voiceId, message.guildId)
+            await elevenlabsSpeak(assistantMessage, voiceId, message.guildId, author)
           } else if (process?.env?.AZURE_SPEECH_KEY && process?.env?.AZURE_SPEECH_REGION) {
-            await azureTextToSpeech(assistantMessage, voiceId, message.guildId)
+            await azureTextToSpeech(assistantMessage, voiceId, message.guildId, author)
           } else {
             throw new Error('No Text to Speech API key found in environment variables. Please close the app down and update your environment variables.')
           }

@@ -5,7 +5,7 @@ import {
   createAudioPlayer,
   createAudioResource
 } from '@discordjs/voice'
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ClientUser } from 'discord.js'
 import { createWriteStream, createReadStream } from 'fs'
 import { opus } from 'prism-media'
 import { pipeline, Transform } from 'stream'
@@ -163,7 +163,7 @@ export const subscribeToUser = (user: string, guildId: string, characterChannel:
   })
 }
 
-export const azureTextToSpeech = async (message: string, voice: string, guildId: string) => {
+export const azureTextToSpeech = async (message: string, voice: string, guildId: string, bot: ClientUser) => {
   try {
     const filename = path.join(__dirname, 'recordings/tts.mp3')
     const speechConfig = SpeechConfig.fromSubscription(process.env.AZURE_SPEECH_KEY, process.env.AZURE_SPEECH_REGION)
@@ -175,7 +175,7 @@ export const azureTextToSpeech = async (message: string, voice: string, guildId:
 
     await synthesizer.speakTextAsync(message, (result) => {
       if (result.reason === ResultReason.SynthesizingAudioCompleted) {
-        speak(path.join(__dirname, 'recordings/tts.mp3'), guildId)
+        speak(path.join(__dirname, 'recordings/tts.mp3'), guildId, bot)
       } else {
         console.log(`text-to-speech error: ${result.errorDetails}`)
       }
@@ -191,7 +191,7 @@ export const azureTextToSpeech = async (message: string, voice: string, guildId:
   }
 }
 
-export const elevenlabsSpeak = async (message: string, voiceId: string, guildId: string) => {
+export const elevenlabsSpeak = async (message: string, voiceId: string, guildId: string, bot: ClientUser) => {
   try {
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
@@ -215,14 +215,14 @@ export const elevenlabsSpeak = async (message: string, voiceId: string, guildId:
     audioStream.end()
 
     audioStream.on('finish', () => {
-      speak(path.join(__dirname, 'recordings/tts.mp3'), guildId)
+      speak(path.join(__dirname, 'recordings/tts.mp3'), guildId, bot)
     })
   } catch (error) {
     console.log(`eleven labs text-to-speech error: ${error}`)
   }
 }
 
-export const speak = (filename: string, guildId: string) => {
+export const speak = (filename: string, guildId: string, bot: ClientUser) => {
   const connection = getVoiceConnection(guildId)
   const audioPlayer = createAudioPlayer()
 
@@ -230,5 +230,17 @@ export const speak = (filename: string, guildId: string) => {
     inlineVolume: true
   })
   audioPlayer.play(audioResource)
+  audioPlayer.on('stateChange', (oldState, newState) => {
+    if (newState.status === 'playing') {
+      bot.setActivity({
+        name: 'Speaking'
+      })
+    } else if (newState.status === 'idle') {
+      bot.setActivity({
+        name: 'Idle'
+      })
+    }
+  })
   connection.subscribe(audioPlayer)
+
 }
