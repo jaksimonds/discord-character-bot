@@ -1,4 +1,5 @@
 import path from 'path'
+import https from 'https'
 import {
   EndBehaviorType,
   getVoiceConnection,
@@ -242,5 +243,31 @@ export const speak = (filename: string, guildId: string, bot: ClientUser) => {
     }
   })
   connection.subscribe(audioPlayer)
+}
 
+export const generateAvatar = async (prompt: string, name: string) => {
+  const response = await openai.images.generate({
+    model: 'dall-e-3',
+    prompt: `a singular vector shape with a simple background that represents the following personality: "${prompt}"`,
+    n: 1,
+    size: '1024x1024'
+  })
+
+  console.log(response)
+
+  const avatar = response.data[0].url
+  downloadFile(avatar, name)
+}
+
+const downloadFile = (url, name) => {
+  const destination = path.join(__dirname, `avatars/${name}.png`)
+  const file = createWriteStream(destination)
+  https.get(url, (response) => {
+    response.pipe(file)
+    file.on('finish', function() {
+      file.close()
+    })
+  }).on('error', (error) => {
+    console.log(`Error downloading avatar to local filesystem: ${error}`)
+  })
 }

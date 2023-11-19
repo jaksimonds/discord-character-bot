@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, SlashCommandBuilder } from 'discord.js'
 import { joinVoiceChannel } from '@discordjs/voice'
 import { subscribeToUser } from '../../utils'
+import path from 'path'
 
 export const data = new SlashCommandBuilder()
 	.setName('add')
@@ -28,6 +29,11 @@ export const execute = async (interaction) => {
 		const characterChannel = interaction.client.channels.cache.find(channel => channel.name === `character-${characterName.toLowerCase()}`)
 		const voiceChannel = interaction.client.channels.cache.get(voiceChannelId)
 		const guild = interaction.client.guilds.cache.get(voiceChannel.guildId)
+		
+		if (process.env.OPENAI_AVATARS === 'TRUE') {
+			const bot = interaction.client.users.cache.get(process.env.DISCORD_CLIENT_ID)
+			bot.setAvatar(path.join(__dirname, `../../avatars/${characterName}.png`))
+		}
 
 		const connection = joinVoiceChannel({
 			channelId: voiceChannel.id,
