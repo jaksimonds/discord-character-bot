@@ -126,6 +126,22 @@ export const autocomplete = async (interaction) => {
       } catch (error) {
         console.error(`error attempting to populate command autocomplete with azure voice data: ${error}`)
       }
+    } else {
+      try {
+        readFile(path.join(__dirname, '../../voices/openaiSpeechVoices.json'), 'utf8', async (error, data) => {
+          if (error) throw error
+          const voices = JSON.parse(data)
+          const filteredVoices = voices.filter(voice => voice.name.toLowerCase().startsWith(focusedValue))
+          await interaction.respond(
+            filteredVoices.slice(0, 25).map(voice => ({
+              name: voice.name,
+              value: voice.id
+            }))
+          )
+        })
+      } catch (error) {
+        console.error(`error attempting to populate command autocomplete with openai speech data: ${error}`)
+      }
     }
   }
 }

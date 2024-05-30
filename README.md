@@ -7,7 +7,7 @@
 ![ElevenLabs](https://img.shields.io/badge/ElvenLabs-white.svg?style=for-the-badge)
 ![Azure](https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
 
-A Node.JS Discord Bot that allows users to create custom AI characters that can be added to voice channels. This bot uses Open AI's Whisper model for speech to text transcription, Open AI's gpt-3.5-turbo model for text generation, and either Eleven Labs or Microsoft Azure's text to speech services.
+A Node.JS Discord Bot that allows users to create custom AI characters that can be added to voice channels. This bot uses Open AI's Whisper model for speech to text transcription, Open AI's gpt-4o model for text generation, and either Eleven Labs or Microsoft Azure's text to speech services.
 
 **DISCLAIMER: User consent is required to use this bot.**
 
@@ -32,11 +32,15 @@ Create a .env file in the root of the project and, using the .env.sample as refe
 - [Discord Bot Key](https://discord.com/developers/docs/getting-started#step-1-creating-an-app): This is needed to connect your bot to the code.
 - [Discord Client ID](https://discord.com/developers/docs/getting-started#step-1-creating-an-app): This is needed to connect your bot to the code.
 - [OpenAI](https://platform.openai.com/account/api-keys): This connects your OpenAI account to the bot and is needed to use their APIs.
+  - This key is required in order to use this bot as it is used to generate chat responses.
+  - By adding the optional OPENAI_AVATARS key you opt into using Dall-E to generate custom avatar images for the active character in a channel.
   - The use of OpenAI's APIs are not free, reference their [pricing page](https://openai.com/pricing) for details.
 - [Eleven Labs](https://docs.elevenlabs.io/api-reference/quick-start/authentication): High quality AI generative Text to Speech service. Can get fairly expensive with more use.
   - The use of Eleven Lab's APIs are not free, reference their [pricing page](https://elevenlabs.io/pricing) for details.
 - [Azure Speech](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-text-to-speech?tabs=windows%2Cterminal&pivots=programming-language-javascript#prerequisites): Moderate quality AI generative Text to Speech service.
   - The use of Azure's APIs are not free, reference their [pricing page](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-services/) for details.
+
+By default the bot will use the OpenAI Speech API to generate Text-to-Speech, however by providing either an ElevenLabs or an Azure Speech key you can opt in to using those services instead.
 
 ### Build
 

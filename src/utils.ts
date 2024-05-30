@@ -1,5 +1,6 @@
 import path from 'path'
 import https from 'https'
+import fs from 'fs'
 import {
   EndBehaviorType,
   getVoiceConnection,
@@ -176,7 +177,7 @@ export const azureTextToSpeech = async (message: string, voice: string, guildId:
 
     await synthesizer.speakTextAsync(message, (result) => {
       if (result.reason === ResultReason.SynthesizingAudioCompleted) {
-        speak(path.join(__dirname, 'recordings/tts.mp3'), guildId, bot)
+        speak(filename, guildId, bot)
       } else {
         console.log(`text-to-speech error: ${result.errorDetails}`)
       }
@@ -216,10 +217,33 @@ export const elevenlabsSpeak = async (message: string, voiceId: string, guildId:
     audioStream.end()
 
     audioStream.on('finish', () => {
-      speak(path.join(__dirname, 'recordings/tts.mp3'), guildId, bot)
+      speak(filename, guildId, bot)
     })
   } catch (error) {
     console.log(`eleven labs text-to-speech error: ${error}`)
+  }
+}
+
+export const openaiSpeak = async (
+  message: string,
+  voiceId: 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer',
+  guildId: string,
+  bot: ClientUser
+) => {
+  try {
+    const filename = path.join(__dirname, 'recordings/tts.mp3')
+    const speech = await openai.audio.speech.create({
+      input: message,
+      model: 'tts-1',
+      voice: voiceId,
+    })
+
+    const buffer = Buffer.from(await speech.arrayBuffer())
+    await fs.promises.writeFile(filename, buffer)
+      .then(() => speak(filename, guildId, bot))
+    
+  } catch (error) {
+    console.log(`openai text-to-speech error: ${error}`)
   }
 }
 
@@ -252,8 +276,6 @@ export const generateAvatar = async (prompt: string, name: string) => {
     n: 1,
     size: '1024x1024'
   })
-
-  console.log(response)
 
   const avatar = response.data[0].url
   downloadFile(avatar, name)

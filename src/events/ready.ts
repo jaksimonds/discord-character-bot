@@ -41,6 +41,41 @@ export const execute = async (client) => {
 				})
 			)
 		}
+
+		const openaiSpeechFilename = path.join(__dirname, '../voices/openaiSpeechVoices.json')
+		const openaiSpeechVoices = [
+			{
+				name: 'Alloy',
+				id: 'alloy'
+			},
+			{
+				name: 'Echo',
+				id: 'echo'
+			},
+			{
+				name: 'Fable',
+				id: 'fable'
+			},
+			{
+				name: 'Onyx',
+				id: 'onyx'
+			},
+			{
+				name: 'Nova',
+				id: 'nova'
+			},
+			{
+				name: 'Shimmer',
+				id: 'shimmer'
+			},
+		]
+		writeFile(openaiSpeechFilename, JSON.stringify(openaiSpeechVoices), 'utf8', (error) => {
+			if (error)
+				console.log(error)
+			else {
+				console.log("OpenAI voices file written successfully")
+			}
+		})
 	} catch (error) {
 		console.log(error)
 	}
