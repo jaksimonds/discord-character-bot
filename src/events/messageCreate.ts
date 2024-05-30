@@ -3,6 +3,7 @@ import {
   chat,
   azureTextToSpeech,
   elevenlabsSpeak,
+  openaiSpeak,
 } from '../utils'
 
 export const name = Events.MessageCreate
@@ -88,7 +89,7 @@ export const execute = async (message) => {
           } else if (process?.env?.AZURE_SPEECH_KEY && process?.env?.AZURE_SPEECH_REGION) {
             await azureTextToSpeech(assistantMessage, voiceId, message.guildId, author)
           } else {
-            throw new Error('No Text to Speech API key found in environment variables. Please close the app down and update your environment variables.')
+            await openaiSpeak(assistantMessage, voiceId || 'echo', message.guildId, author)
           }
         } catch (error) {
           console.error(`error attempting to convert text to speech: ${error}`)
