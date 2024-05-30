@@ -1,6 +1,7 @@
 import path from 'path'
 import { SlashCommandBuilder, TextChannel } from 'discord.js'
 import { readFile } from 'fs'
+import { generateAvatar } from '../../utils'
 
 export const data = new SlashCommandBuilder()
   .setName('create')
@@ -63,6 +64,9 @@ export const execute = async (interaction) => {
       })
       await thread.send(`System: ${characterPersonality}`).then(message => message.pin())
       await thread.send(`Voice: ${characterVoice}`).then(message => message.pin())
+      if (process.env.OPENAI_AVATARS === 'TRUE') {
+        await generateAvatar(characterPersonality, characterName)
+      }
       if (temperature) {
         await thread.send(`Temperature: ${temperature}`).then(message => message.pin())
       }

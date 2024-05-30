@@ -133,7 +133,7 @@ export const autocomplete = async (interaction) => {
           const { voices } = JSON.parse(data)
           const filteredVoices = voices.filter(voice => voice.name.toLowerCase().startsWith(focusedOption.value))
           await interaction.respond(
-            filteredVoices.map(voice => ({
+            filteredVoices.slice(0, 25).map(voice => ({
               name: voice.name,
               value: voice.voice_id
             }))

@@ -19,6 +19,11 @@ if (!existsSync(recordingsFolderPath)) {
   mkdirSync(recordingsFolderPath)
 }
 
+const avatarsFolderPath = path.join(__dirname, 'avatars')
+if (!existsSync(avatarsFolderPath)) {
+  mkdirSync(avatarsFolderPath)
+}
+
 class CustomClient extends Client {
 	commands: Map<string, ICommand> = new Map()
 
