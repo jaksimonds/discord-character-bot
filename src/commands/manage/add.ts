@@ -1,7 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, SlashCommandBuilder } from 'discord.js'
 import { joinVoiceChannel } from '@discordjs/voice'
-import { subscribeToUser } from '../../utils'
+import { subscribeToUser, generateAvatar } from '../../utils'
 import path from 'path'
+import fs from 'fs'
 
 export const data = new SlashCommandBuilder()
 	.setName('add')
@@ -32,7 +33,14 @@ export const execute = async (interaction) => {
 		
 		if (process.env.OPENAI_AVATARS === 'TRUE') {
 			const bot = interaction.client.users.cache.get(process.env.DISCORD_CLIENT_ID)
-			bot.setAvatar(path.join(__dirname, `../../avatars/${characterName}.png`))
+			if (fs.existsSync(path.join(__dirname, `../../avatars/${characterName}.png`))) {
+				bot.setAvatar(path.join(__dirname, `../../avatars/${characterName}.png`))
+			} else {
+				const pinnedMessages = await characterChannel.messages.fetchPinned()
+				const characterPersonality = pinnedMessages.find(pinnedMessage => pinnedMessage.content.toLowerCase().startsWith('system'))
+				await generateAvatar(characterPersonality, characterName)
+					.then(() => bot.setAvatar(path.join(__dirname, `../../avatars/${characterName}.png`)))
+			}
 		}
 
 		const connection = joinVoiceChannel({
