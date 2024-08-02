@@ -109,6 +109,8 @@ export const subscribeToUser = (user: string, guildId: string, characterChannel:
     }
   })
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   pipeline(streamer, opusDecoder, logStream, writable, async (error) => {
     if (error) {
       console.error(`pipeline failed: ${error}`)
@@ -281,12 +283,14 @@ export const generateAvatar = async (prompt: string, name: string) => {
   downloadFile(avatar, name)
 }
 
-const downloadFile = (url, name) => {
+const downloadFile = (url: string, name: string) => {
   const destination = path.join(__dirname, `avatars/${name}.png`)
   const file = createWriteStream(destination)
   https.get(url, (response) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     response.pipe(file)
-    file.on('finish', function() {
+    file.on('finish', () => {
       file.close()
     })
   }).on('error', (error) => {
