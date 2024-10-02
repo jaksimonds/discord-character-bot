@@ -93,11 +93,12 @@ Used to create a thread in the text channel where the command was executed. The 
 
 Adds the bot to the specified voice channel. Once added the bot will use the specified character thread to load config options. When the bot is set to Open all voice is captured and submitted, this is best used with one person. Otherwise a button will be added to the voice channel's chat that controls when a user starts being recorded.
 
-| Option  | Description                                      | Type    | Required |
-| ------- | ------------------------------------------------ | ------- | -------- |
-| Name    | The name of the character to message.            | String  | True     |
-| Channel | The name of the channel the character will join. | String  | True     |
-| Open    | Sets if the call is open mic or not              | Boolean | False    |
+| Option  | Description                                                                                                                   | Type    | Required |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------- | ------- | -------- |
+| Name    | The name of the character to message.                                                                                         | String  | True     |
+| Channel | The name of the channel the character will join.                                                                              | String  | True     |
+| Open    | Sets if the call is open mic or not                                                                                           | Boolean | False    |
+| Random  | Sets if the open mic communication should randomly select a speak event to send to the model rather than pulling every event. | Boolean | False    |
 
 ### Edit
 
