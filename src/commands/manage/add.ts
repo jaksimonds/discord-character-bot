@@ -1,6 +1,11 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, SlashCommandBuilder } from 'discord.js'
 import { joinVoiceChannel } from '@discordjs/voice'
-import { subscribeToUser, generateAvatar } from '../../utils'
+import {
+	subscribeToUser,
+	generateAvatar,
+	getRandomInt,
+	debounce
+} from '../../utils'
 import path from 'path'
 import fs from 'fs'
 
@@ -20,12 +25,19 @@ export const data = new SlashCommandBuilder()
 	.addBooleanOption(option =>
 		option.setName('open')
 			.setDescription('Sets if the call is open mic or not.'))
+	.addBooleanOption(option =>
+		option.setName('random')
+			.setDescription('Sets the bot to pull a random user to submit to the AI.'))
+
+let speakingUser = null
+let randomUserCountdown = getRandomInt(20, 100)
 
 export const execute = async (interaction) => {
 	try {
 		const characterName = interaction.options.getString('name')
 		const voiceChannelId = interaction.options.getString('channel')
 		const open = interaction.options?.getBoolean('open')
+		const random = interaction.options?.getBoolean('random')
 
 		const characterChannel = interaction.client.channels.cache.find(channel => channel.name === `character-${characterName.toLowerCase()}`)
 		const voiceChannel = interaction.client.channels.cache.get(voiceChannelId)
@@ -52,13 +64,28 @@ export const execute = async (interaction) => {
 		})
 
 		await voiceChannel.send(`Character: ${characterName}`)
-		await voiceChannel.send(`Open: ${open || 'false'}`)
 
 		if (open) {
-			connection.receiver.speaking.on('start', async (user) => {
-				const userObject = guild.members.cache.find(member => member.user.id === user)
-				if (userObject.user.bot) return
-				subscribeToUser(user, guild.id, characterChannel)
+			connection.receiver.speaking.on('start', debounce(async (user) => {
+				if (!speakingUser) {
+					if (random && randomUserCountdown > 0) {
+						--randomUserCountdown
+					} else {
+						const userObject = guild.members.cache.find(member => member.user.id === user)
+						if (userObject.user.bot) return
+
+						speakingUser = user
+
+						subscribeToUser(user, guild.id, characterChannel)
+					}
+				}
+			}, 2500)).on('end', () => {
+				if (speakingUser) {
+					speakingUser = null
+					if (random) {
+						randomUserCountdown = getRandomInt(20, 100)
+					}
+				}
 			})
 		} else {
 			const record = new ButtonBuilder()
