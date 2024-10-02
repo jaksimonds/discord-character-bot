@@ -13,14 +13,11 @@ export const execute = async (oldMember, newMember) => {
 	const characterMessage = voiceChannel.messages.cache.find(message => message.content.includes('Character: '))
 	const characterName = characterMessage?.content?.replace('Character: ', '')
 
-	const openMessage = voiceChannel.messages.cache.find(message => message.content.includes('Open: '))
-
 	const recordMessage = voiceChannel.messages.cache.find(message => message.content.includes('Record:'))
 
 	if (newMemberObject.user.bot) {
 		if (oldMember?.channelId && !newMember?.channelId) {
 			characterMessage?.delete()
-			openMessage?.delete()
 			if (recordMessage) {
 				recordMessage.delete()
 			}
