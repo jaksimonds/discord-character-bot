@@ -7,7 +7,12 @@ import {
   createAudioPlayer,
   createAudioResource
 } from '@discordjs/voice'
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ClientUser } from 'discord.js'
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ClientUser
+} from 'discord.js'
 import { createWriteStream, createReadStream } from 'fs'
 import { opus } from 'prism-media'
 import { pipeline, Transform } from 'stream'
@@ -34,15 +39,37 @@ interface IMessage {
   content: string
 }
 
+/**
+ * Forces the requested number to be within the min/max range.
+ * 
+ * @param num - The number attempting to be used
+ * @param min - The minimum range the passed num value can be
+ * @param max - The maximum range the passed num value can be
+ * @returns The number value that is no greater and no less than the passed min/max values
+ */
 export const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max)
 
-export const getRandomInt = (min, max) => {
+/**
+ * Generates a random integer between the min/max range.
+ * 
+ * @param min - The minimum range the random integer can be
+ * @param max - The maximum range the random integer can be
+ * @returns A random integer between the supplied range
+ */
+export const getRandomInt = (min: number, max: number) => {
   const minCeiled = Math.ceil(min)
   const maxFloored = Math.floor(max)
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled)
 }
 
-export const debounce = (func, timeout = 300) => {
+/**
+ * Staggers the execution of a function by a delayed timeout to prevent rapid firing.
+ * 
+ * @param func - Callback function that needs to be debounced
+ * @param timeout - The amount of time before the callback function can be executed
+ * @returns A function with the setTimeout that ultimately calls the func callback
+ */
+export const debounce = (func: (...args: unknown[]) => unknown, timeout: number = 300) => {
   let timer
   return (...args) => {
     clearTimeout(timer)
@@ -52,6 +79,20 @@ export const debounce = (func, timeout = 300) => {
   }
 }
 
+/**
+ * Chat function that passes a user's message to the OpenAI chat completions API.
+ * 
+ * @param name - The name of the character that the Discord bot is set to
+ * @param personality - The stored personality prompt for the character the Discord bot is set to
+ * @param chatLogs - An array of messages from previous interactions with the Discord bot
+ * @param message - The user submitted prompt that was recorded and transcribed
+ * @param temperature - The stored temperature value that the character is set to which gets forwarded to the OpenAI chat API
+ * @param max_tokens - The stored maximum amount of tokens the OpenAI chat API can use for response generation
+ * @param top_p - The stored top_p value which is basically an alternative to the temperature parameter
+ * @param frequency_penalty - The stored frequency_penalty value that the character is set to which alters the likelihood of repeated lines
+ * @param presence_penalty - The stored presence_penalty value that the character is set to which alters the likelihood of new topics
+ * @returns A chat response message from the OpenAI Chat API
+ */
 export const chat = async (
   name: string,
   personality: string,
@@ -87,6 +128,12 @@ export const chat = async (
   return answer
 }
 
+/**
+ * Forwards an audio file to the OpenAI Whisper model for speech-to-text transcription.
+ * 
+ * @param file - The filepath to the mp3 file to pass to the OpenAI Whisper model
+ * @returns The transcribed text the Whisper model extracted from the audio file
+ */
 export const transcribe = async (file: string) => {
   try {
     const fileObject = createReadStream(file)
@@ -100,7 +147,20 @@ export const transcribe = async (file: string) => {
   }
 }
 
-export const subscribeToUser = (user: string, guildId: string, characterChannel: TextChannel, voiceChannel?: VoiceChannel) => {
+/**
+ * Records the selected user's voice to a static file and passes it to the transcribe function.
+ * 
+ * @param user - The Discord user that is being recorded
+ * @param guildId - The Discord server ID that the bot is currently active in
+ * @param characterChannel - The Discord thread channel object for the currently active character in the voice call
+ * @param voiceChannel - The Discord voice channel object that the character bot is active in
+ */
+export const subscribeToUser = (
+  user: string,
+  guildId: string,
+  characterChannel: TextChannel,
+  voiceChannel?: VoiceChannel
+) => {
   ffmpeg.setFfmpegPath(ffmpegStatic)
 
   const connection = getVoiceConnection(guildId)
@@ -183,7 +243,20 @@ export const subscribeToUser = (user: string, guildId: string, characterChannel:
   })
 }
 
-export const azureTextToSpeech = async (message: string, voice: string, guildId: string, bot: ClientUser) => {
+/**
+ * Passes the Character Bot's generated text response to the Azure text-to-speech model using the stored character's voice.
+ * 
+ * @param message - The character bot message to be passed to the Azure text-to-speech model
+ * @param voice - The stored voice profile that the character is set to
+ * @param guildId - The Discord server ID that the bot is currently active in
+ * @param bot - The Discord character bot's user object
+ */
+export const azureTextToSpeech = async (
+  message: string,
+  voice: string,
+  guildId: string,
+  bot: ClientUser
+) => {
   try {
     const filename = path.join(__dirname, 'recordings/tts.mp3')
     const speechConfig = SpeechConfig.fromSubscription(process.env.AZURE_SPEECH_KEY, process.env.AZURE_SPEECH_REGION)
@@ -211,7 +284,20 @@ export const azureTextToSpeech = async (message: string, voice: string, guildId:
   }
 }
 
-export const elevenlabsSpeak = async (message: string, voiceId: string, guildId: string, bot: ClientUser) => {
+/**
+ * Passes the Character Bot's generated text response to the ElevenLabs text-to-speech model using the stored character's voice.
+ * 
+ * @param message - The character bot message to be passed to the Azure text-to-speech model
+ * @param voiceId - The stored voice profile that the character is set to
+ * @param guildId - The Discord server ID that the bot is currently active in
+ * @param bot - The Discord character bot's user object
+ */
+export const elevenlabsSpeak = async (
+  message: string,
+  voiceId: string,
+  guildId: string,
+  bot: ClientUser
+) => {
   try {
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
@@ -242,6 +328,14 @@ export const elevenlabsSpeak = async (message: string, voiceId: string, guildId:
   }
 }
 
+/**
+ * Passes the Character Bot's generated text response to the OpenAI text-to-speech model using the stored character's voice.
+ * 
+ * @param message - The character bot message to be passed to the Azure text-to-speech model
+ * @param voiceId - The stored voice profile that the character is set to
+ * @param guildId - The Discord server ID that the bot is currently active in
+ * @param bot - The Discord character bot's user object
+ */
 export const openaiSpeak = async (
   message: string,
   voiceId: 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer',
@@ -265,7 +359,18 @@ export const openaiSpeak = async (
   }
 }
 
-export const speak = (filename: string, guildId: string, bot: ClientUser) => {
+/**
+ * Takes the file output from the active text-to-speech model and sends it to the Discord audio player in the active voice call.
+ * 
+ * @param filename - The filepath to the mp3 file to pass to Discord's audio player
+ * @param guildId - The Discord server ID that the bot is currently active in
+ * @param bot - The Discord character bot's user object
+ */
+export const speak = (
+  filename: string,
+  guildId: string,
+  bot: ClientUser
+) => {
   const connection = getVoiceConnection(guildId)
   const audioPlayer = createAudioPlayer()
 
@@ -287,6 +392,12 @@ export const speak = (filename: string, guildId: string, bot: ClientUser) => {
   connection.subscribe(audioPlayer)
 }
 
+/**
+ * Takes the personality of the character and passes it as the prompt for OpenAI's Dall-E model's image generation and passes it to the downloadFile.
+ * 
+ * @param prompt - The personality prompt for the character that is being generated
+ * @param name - The name for the character that is being generated
+ */
 export const generateAvatar = async (prompt: string, name: string) => {
   const response = await openai.images.generate({
     model: 'dall-e-3',
@@ -299,6 +410,12 @@ export const generateAvatar = async (prompt: string, name: string) => {
   downloadFile(avatar, name)
 }
 
+/**
+ * Downloads a file from a given URL to the file system.
+ * 
+ * @param url - The URL to the file to be downloaded
+ * @param name - The name of the file to be saved locally
+ */
 const downloadFile = (url: string, name: string) => {
   const destination = path.join(__dirname, `avatars/${name}.png`)
   const file = createWriteStream(destination)
