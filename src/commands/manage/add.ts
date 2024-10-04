@@ -76,7 +76,7 @@ export const execute = async (interaction) => {
 
 						speakingUser = user
 
-						subscribeToUser(user, guild.id, characterChannel)
+						subscribeToUser(user as string, guild.id, characterChannel)
 					}
 				}
 			}, 2500)).on('end', () => {
