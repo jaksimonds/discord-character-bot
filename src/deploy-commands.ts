@@ -14,7 +14,7 @@ for (const folder of commandFolders) {
 	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file)
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 		const command = require(filePath)
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON())

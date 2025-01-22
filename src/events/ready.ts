@@ -1,7 +1,9 @@
 import path from 'path'
 import { Events } from 'discord.js'
 import { writeFile } from 'fs'
+import { OBSWebSocket } from 'obs-websocket-js'
 
+export const obs = new OBSWebSocket()
 export const	name = Events.ClientReady
 export const once = true
 export const execute = async (client) => {
@@ -81,6 +83,10 @@ export const execute = async (client) => {
 				console.log("OpenAI voices file written successfully")
 			}
 		})
+
+		obs.connect(process.env.OBS_WEB_SOCKET_URL, process.env.OBS_WEB_SOCKET_PASSWORD)
+			.then(() => console.log('OBS connection successful'))
+			.catch(error => console.log(error))
 	} catch (error) {
 		console.log(error)
 	}
