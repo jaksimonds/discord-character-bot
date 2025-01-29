@@ -83,7 +83,7 @@ export const execute = async (interaction) => {
 				if (speakingUser) {
 					speakingUser = null
 					if (random) {
-						randomUserCountdown = getRandomInt(20, 100)
+						randomUserCountdown = getRandomInt(100, 200)
 					}
 				}
 			})

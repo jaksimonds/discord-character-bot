@@ -26,6 +26,7 @@ import {
 } from 'microsoft-cognitiveservices-speech-sdk'
 import OpenAI from 'openai'
 import { TextChannel, VoiceChannel } from 'discord.js'
+import { obs } from './events/ready'
 
 const configuration = {
   organization: "org-luvrFP8KIr7T00u3G61J65R8",
@@ -378,15 +379,25 @@ export const speak = (
     inlineVolume: true
   })
   audioPlayer.play(audioResource)
-  audioPlayer.on('stateChange', (oldState, newState) => {
-    if (newState.status === 'playing') {
-      bot.setActivity({
-        name: 'Speaking'
-      })
-    } else if (newState.status === 'idle') {
-      bot.setActivity({
-        name: 'Idle'
-      })
+  audioPlayer.on('stateChange', async (oldState, newState) => {
+    try {
+      if (newState.status === 'playing') {
+        bot.setActivity({
+          name: 'Speaking'
+        })
+        if (obs && process.env.OBS_SPEAKING_SCENE) {
+          await obs.call('SetCurrentProgramScene', { sceneName: process.env.OBS_SPEAKING_SCENE})
+        }
+      } else if (newState.status === 'idle') {
+        bot.setActivity({
+          name: 'Idle'
+        })
+        if (obs && process.env.OBS_IDLE_SCENE) {
+          await obs.call('SetCurrentProgramScene', { sceneName: process.env.OBS_IDLE_SCENE})
+        }
+      }
+    } catch (error) {
+      console.log(error)
     }
   })
   connection.subscribe(audioPlayer)

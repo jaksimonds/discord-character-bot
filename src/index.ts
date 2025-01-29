@@ -50,7 +50,7 @@ for (const folder of commandFolders) {
 	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file)
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 		const command = require(filePath)
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command)
@@ -65,7 +65,7 @@ const eventFiles = readdirSync(eventsPath).filter(file => file.endsWith('.js'))
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file)
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 	const event = require(filePath)
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args))
